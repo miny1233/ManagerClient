@@ -1,0 +1,230 @@
+@page "/Store"
+@using System.Collections.Generic
+@using Microsoft.AspNetCore.Components.Forms
+
+<h3>图书管理</h3>
+
+<button class="btn btn-primary" @onclick="ShowAddBookModal">添加图书</button>
+
+@if (books.Count == 0)
+{
+    <p>没有图书。</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>书本ID</th>
+                <th>类型 (Title)</th> <!-- 类型：Title -->
+                <th>书名 (BookName)</th> <!-- 书名：BookName -->
+                <th>作者</th>
+                <th>价格</th>
+                <th>描述</th>
+                <th>图片</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in books)
+            {
+                <tr>
+                    <td>@book.BookId</td>
+                    <td>@book.Title</td> <!-- 显示图书的类型 -->
+                    <td>@book.BookName</td> <!-- 显示书本的名称 -->
+                    <td>@book.Author</td>
+                    <td>@book.Price.ToString("C")</td>
+                    <td>@book.Description</td>
+                    <td>
+                        @if (book.Image != null)
+                        {
+                            <img src="@($"data:image/png;base64,{Convert.ToBase64String(book.Image)}")" alt="Book Image" style="width: 100px; height: auto;" />
+                        }
+                    </td>
+                    <td>
+                        <button class="btn btn-warning" @onclick="() => ShowEditBookModal(book)">编辑</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteBook(book.BookId)">删除</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<!-- 添加图书模态框 -->
+@if (isAddModalVisible)
+{
+    <div class="modal" style="display:block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加图书</h5>
+                    <button type="button" class="close" @onclick="HideAddBookModal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@newBook" OnValidSubmit="AddBook">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="form-group">
+                            <label for="title">类型</label> <!-- 输入类型 -->
+                            <InputText id="title" @bind-Value="newBook.Title" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="bookName">书名</label> <!-- 输入书名 -->
+                            <InputText id="bookName" @bind-Value="newBook.BookName" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="author">作者</label>
+                            <InputText id="author" @bind-Value="newBook.Author" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="price">价格</label>
+                            <InputNumber id="price" @bind-Value="newBook.Price" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="description">描述</label>
+                            <InputTextArea id="description" @bind-Value="newBook.Description" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="image">上传图片</label>
+                            <InputFile id="image" OnChange="HandleImageUpload" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">添加</button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- 编辑图书模态框 -->
+@if (isEditModalVisible)
+{
+    <div class="modal" style="display:block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑图书</h5>
+                    <button type="button" class="close" @onclick="HideEditBookModal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@editBook" OnValidSubmit="UpdateBook">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="form-group">
+                            <label for="title">类型</label> <!-- 编辑类型 -->
+                            <InputText id="title" @bind-Value="editBook.Title" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="bookName">书名</label> <!-- 编辑书名 -->
+                            <InputText id="bookName" @bind-Value="editBook.BookName" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="author">作者</label>
+                            <InputText id="author" @bind-Value="editBook.Author" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="price">价格</label>
+                            <InputNumber id="price" @bind-Value="editBook.Price" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="description">描述</label>
+                            <InputTextArea id="description" @bind-Value="editBook.Description" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="image">上传新图片</label>
+                            <InputFile id="image" OnChange="HandleImageUploadEdit" />
+                        </div>
+                        <button type="submit" class="btn btn-warning">更新</button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@using ManagerClient.Data;
+@inject BookService bookService;
+
+@code {
+    private List<Book> books = new List<Book>();
+    private Book newBook = new Book();
+    private Book editBook = new Book();
+    private bool isAddModalVisible = false;
+    private bool isEditModalVisible = false;
+    private bool isLoaddingVisible = false;
+
+    protected override void OnInitialized()
+    {
+       books = bookService.GetAllBooks();
+    }
+
+    private void ShowAddBookModal()
+    {
+        newBook = new Book(); // 清空新图书信息
+        isAddModalVisible = true;
+    }
+
+    private void HideAddBookModal()
+    {
+        OnInitialized();
+        isAddModalVisible = false;
+    }
+
+    private async Task AddBook()
+    {
+        newBook.BookId = books.Count + 1; // 设置新图书的ID
+        bookService.AddBook(newBook);
+        // books.Add(newBook);
+        HideAddBookModal();
+    }
+
+    private void ShowEditBookModal(Book book)
+    {
+        editBook = book; // 选择编辑的图书
+        isEditModalVisible = true;
+    }
+
+    private void HideEditBookModal()
+    {
+        isEditModalVisible = false;
+    }
+
+    private void UpdateBook()
+    {
+        bookService.UpdateBook(editBook);
+        HideEditBookModal();
+    }
+
+    private void DeleteBook(int id)
+    {
+        //books.RemoveAll(b => b.BookId == id); // 删除图书
+        bookService.DeleteBook(id);
+        OnInitialized(); // reflush;
+    }
+
+    private async void HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        using (var stream = new MemoryStream())
+        {
+            await file.OpenReadStream(maxAllowedSize: 500 * 1024 * 1024).CopyToAsync(stream);
+            newBook.Image = stream.ToArray(); // 保存图片字节
+        }
+    }
+
+    private async void HandleImageUploadEdit(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        using (var stream = new MemoryStream())
+        {
+            await file.OpenReadStream(maxAllowedSize: 500 * 1024 * 1024).CopyToAsync(stream);
+            editBook.Image = stream.ToArray(); // 保存图片字节
+        }
+    }
+}
