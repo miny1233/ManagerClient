@@ -161,7 +161,14 @@ else
 
     protected override void OnInitialized()
     {
-       books = bookService.GetAllBooks();
+        flushBooks();
+    }
+
+    public async Task flushBooks()
+    {
+        books = [];
+        books = await bookService.GetAllBooks();
+        StateHasChanged();
     }
 
     private void ShowAddBookModal()
@@ -170,9 +177,9 @@ else
         isAddModalVisible = true;
     }
 
-    private void HideAddBookModal()
+    private async void HideAddBookModal()
     {
-        OnInitialized();
+        await flushBooks();
         isAddModalVisible = false;
     }
 
@@ -180,7 +187,6 @@ else
     {
         newBook.BookId = books.Count + 1; // 设置新图书的ID
         bookService.AddBook(newBook);
-        // books.Add(newBook);
         HideAddBookModal();
     }
 
@@ -195,9 +201,10 @@ else
         isEditModalVisible = false;
     }
 
-    private void UpdateBook()
+    private async void UpdateBook()
     {
         bookService.UpdateBook(editBook);
+        await flushBooks();
         HideEditBookModal();
     }
 

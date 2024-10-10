@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Data;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 
 namespace ManagerClient.Data
@@ -87,16 +89,16 @@ namespace ManagerClient.Data
 		}
 
 		// 仓库书本操作
-		public List<Book> GetAllBooks()
+		public async Task<List<Book>> GetAllBooks()
 		{
 			List<Book> books = [];
 
 			string query = "SELECT * FROM Books";
         	using (var cmd = new MySqlCommand(query, GetConn()))
         	{
-            	using (var reader = cmd.ExecuteReader())
+            	using (var reader = await cmd.ExecuteReaderAsync())
             	{
-                	while (reader.Read())
+                	while (await reader.ReadAsync())
                 	{
                     	books.Add(new Book
                     	{
@@ -111,7 +113,7 @@ namespace ManagerClient.Data
                 	}
             	}
         	}
-
+			
 			return books;
 		}
 
