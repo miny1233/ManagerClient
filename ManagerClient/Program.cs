@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel((context,options) => {
     options.ListenAnyIP(1233, listenOptions => {
         listenOptions.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
-        //listenOptions.UseHttps();
+        //listenOptions.UseHttdps();
     });
 });
 
@@ -23,7 +23,8 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
 }
-
+// Logger
+//app.UseW3CLogging();
 
 app.UseStaticFiles();
 

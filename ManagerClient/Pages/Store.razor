@@ -176,7 +176,7 @@ else
         isAddModalVisible = false;
     }
 
-    private async Task AddBook()
+    private void AddBook()
     {
         newBook.BookId = books.Count + 1; // 设置新图书的ID
         bookService.AddBook(newBook);
@@ -213,7 +213,7 @@ else
         var file = e.File;
         using (var stream = new MemoryStream())
         {
-            await file.OpenReadStream(maxAllowedSize: 500 * 1024 * 1024).CopyToAsync(stream);
+            await file.OpenReadStream().CopyToAsync(stream);
             newBook.Image = stream.ToArray(); // 保存图片字节
         }
     }
@@ -223,7 +223,7 @@ else
         var file = e.File;
         using (var stream = new MemoryStream())
         {
-            await file.OpenReadStream(maxAllowedSize: 500 * 1024 * 1024).CopyToAsync(stream);
+            await file.OpenReadStream().CopyToAsync(stream);
             editBook.Image = stream.ToArray(); // 保存图片字节
         }
     }

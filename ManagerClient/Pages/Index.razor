@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using AntDesign.Charts
 
 <PageTitle>Index</PageTitle>
 
@@ -6,5 +7,47 @@
 
 Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<AntDesign.Charts.Line Data="data1" Config="config1"/>
 
+@code {
+     object[] data1 = {
+        new {date = "2019-01-01", value = 3},
+        new {date = "2019-02-01", value = 4},
+        new {date = "2019-03-01", value = 3.5},
+        new {date = "2019-04-01", value = 5},
+        new {date = "2019-05-01", value = 4.9, festival = "劳动节"},
+        new {date = "2019-06-01", value = 6},
+        new {date = "2019-07-01", value = 7},
+        new {date = "2019-08-01", value = 9},
+        new {date = "2019-09-01", value = 3},
+        new {date = "2019-10-01", value = 13, festival = "国庆节"},
+        new {date = "2019-11-01", value = 6},
+        new {date = "2019-12-01", value = 23}
+    };
+
+        LineConfig config1 = new LineConfig(){
+            Title = new Title
+            {
+                Visible = true,
+                Text = "带标注点的折线图"
+            },
+            Description = new Description
+            {
+                Visible = true,
+                Text = "在折线图上标注重点的数据，如节假日等"
+            },
+            ForceFit = true,
+            Padding = "auto",
+            XField = "date",
+            YField = "value",
+            YAxis = new ValueAxis
+            {
+                Nice = true
+            },
+            Label = new Label
+            {
+                Visible = false
+            }
+        };
+
+}

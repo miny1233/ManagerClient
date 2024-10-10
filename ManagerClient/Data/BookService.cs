@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using Microsoft.AspNetCore.Components;
 using MySql.Data.MySqlClient;
 
 namespace ManagerClient.Data
@@ -14,6 +15,18 @@ namespace ManagerClient.Data
     	public byte[] Image { get; set; } // 用于存储图像
     	public string BookName { get; set; }
 	}
+
+	public class Order
+		{
+    		public int OrderId { get; set; }
+    		public DateTime OrderDateTime { get; set; }
+    		public string Status { get; set; }
+    		public string ShoppingAddress { get; set; }
+    		public string UserName { get; set; }
+    		public string BookName { get; set; }
+    		public string Title { get; set; }
+    		public decimal Price { get; set; }
+		}
 	public class BookService
 	{
 		MySqlConnectionStringBuilder mySqlConnectionStringBuilder = new MySqlConnectionStringBuilder()
@@ -26,9 +39,18 @@ namespace ManagerClient.Data
         };
 
 		//MySqlConnection conn;
+		/*
+			Mysql不支持单连接并发操作
+			Mysql.Data也不支持队列 连接池
+			为了方便直接一个查询一个连接
 
+			关于释放：
+				释放？什么释放？直接交给GC就行了
+		*/
 		public MySqlConnection GetConn()
 		{
+			GC.Collect(); // 因为每次打开后都不会删，所以干脆每次都主动要求回收一次
+
 			MySqlConnection conn = new(mySqlConnectionStringBuilder.ConnectionString);
 			conn.Open();
 
@@ -53,7 +75,7 @@ namespace ManagerClient.Data
 		// 仓库书本操作
 		public List<Book> GetAllBooks()
 		{
-			List<Book> books = new List<Book>();
+			List<Book> books = [];
 
 			string query = "SELECT * FROM Books";
         	using (var cmd = new MySqlCommand(query, GetConn()))
@@ -98,6 +120,7 @@ namespace ManagerClient.Data
     	}
 
 		public void UpdateBook(Book updatedBook){
+
 			string query = "UPDATE Books SET title = @Title, description = @Description, author = @Author, " +
                        "price = @Price, image = @Image, book_name = @BookName WHERE book_id = @BookId";
 
@@ -125,6 +148,50 @@ namespace ManagerClient.Data
             	cmd.ExecuteNonQuery();
         	}
 		}
+
+		// 订单管理
+		
+
+		 public async Task<List<Order>> GetOrdersAsync()
+    	{
+        	var orders = new List<Order>();
+
+        	using (var connection = GetConn())
+        	{
+
+            	string query = @"
+                SELECT o.order_id, o.order_datetime, o.status, o.shopping_address, 
+                       u.username, b.book_name, b.title, b.price
+                FROM app_database.Orders o
+                LEFT JOIN app_database.Users u ON o.user_id = u.user_id
+                LEFT JOIN app_database.Books b ON o.book_id = b.book_id;
+           	 	";
+
+            	using (var command = new MySqlCommand(query, connection))
+            	{
+                	using (var reader = await command.ExecuteReaderAsync())
+                	{
+                    	while (await reader.ReadAsync())
+                    	{
+                        	var order = new Order() {
+                            	OrderId = reader.GetInt32("order_id"),
+                            	OrderDateTime = reader.GetDateTime("order_datetime"),
+                            	Status = reader.GetString("status"),
+                            	ShoppingAddress = reader.GetString("shopping_address"),
+                            	UserName = reader.GetString("username"),
+                            	BookName = reader.GetString("book_name"),
+                            	Title = reader.GetString("title"),
+                            	Price = reader.GetDecimal("price")
+                        	};
+                        orders.Add(order);
+                    }
+                }
+            }
+        	}
+
+        	return orders;
+    	}
+
 	}
 }
 

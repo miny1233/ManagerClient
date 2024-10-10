@@ -1,22 +1,58 @@
 ﻿@page "/counter"
 
-<PageTitle>Counter</PageTitle>
+<PageTitle>订单管理</PageTitle>
 
-<h1>Counter</h1>
+<h1>订单管理</h1>
 
-<p role="status">Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
-@using ManagerClient.Data
-@inject BookService bookService;
-
-@code {
-    private int currentCount = 0;
-
-    private void IncrementCount()
-    {
-        currentCount = bookService.GetUserCount();
-    }
+@if (orders == null)
+{
+    <p><em>加载中...</em></p>
+}
+else if (orders.Count == 0)
+{
+    <p>没有找到订单。</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>订单ID</th>
+                <th>用户</th>
+                <th>书籍名称</th>
+                <th>书籍类型</th>
+                <th>价格</th>
+                <th>状态</th>
+                <th>订单日期</th>
+                <th>地址</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in orders)
+            {
+                <tr>
+                    <td>@order.OrderId</td>
+                    <td>@order.UserName</td>
+                    <td>@order.BookName</td>
+                    <td>@order.Title</td>
+                    <td>@order.Price</td>
+                    <td>@order.Status</td>
+                    <td>@order.OrderDateTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td>@order.ShoppingAddress</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 
+@using ManagerClient.Data;
+@inject BookService bookService
+
+@code {
+    private List<Order> orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        orders = await bookService.GetOrdersAsync();
+    }
+}
