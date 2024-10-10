@@ -23,6 +23,7 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
+    app.UseHttpsRedirection();
 }
 // Logger
 //app.UseW3CLogging();
