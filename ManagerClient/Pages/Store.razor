@@ -2,13 +2,15 @@
 @using System.Collections.Generic
 @using Microsoft.AspNetCore.Components.Forms
 
+<PageTitle>图书管理</PageTitle>
+
 <h3>图书管理</h3>
 
 <button class="btn btn-primary" @onclick="ShowAddBookModal">添加图书</button>
 
 @if (books.Count == 0)
 {
-    <p>没有图书。</p>
+    <p>加载中。。。</p>
 }
 else
 {
@@ -164,7 +166,7 @@ else
         flushBooks();
     }
 
-    public async Task flushBooks()
+    public async void flushBooks()
     {
         books = [];
         books = await bookService.GetAllBooks();
@@ -177,10 +179,10 @@ else
         isAddModalVisible = true;
     }
 
-    private async void HideAddBookModal()
+    private void HideAddBookModal()
     {
-        await flushBooks();
         isAddModalVisible = false;
+        flushBooks();
     }
 
     private void AddBook()
@@ -199,20 +201,21 @@ else
     private void HideEditBookModal()
     {
         isEditModalVisible = false;
+        flushBooks();
     }
 
-    private async void UpdateBook()
+    private void UpdateBook()
     {
         bookService.UpdateBook(editBook);
-        await flushBooks();
         HideEditBookModal();
+        flushBooks();
     }
 
     private void DeleteBook(int id)
     {
         //books.RemoveAll(b => b.BookId == id); // 删除图书
         bookService.DeleteBook(id);
-        OnInitialized(); // reflush;
+        flushBooks();
     }
 
     private async void HandleImageUpload(InputFileChangeEventArgs e)
