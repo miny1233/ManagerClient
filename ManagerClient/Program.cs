@@ -1,8 +1,14 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using ManagerClient.Data;
+﻿using ManagerClient.Data;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel((context,options) => {
+    options.ListenAnyIP(1233, listenOptions => {
+        listenOptions.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
+        //listenOptions.UseHttps();
+    });
+});
 
 // Add services to the container.
 builder.Services.AddRazorPages();
