@@ -15,6 +15,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<BookService>();
+builder.Services.AddAntDesign();
 
 var app = builder.Build();
 
