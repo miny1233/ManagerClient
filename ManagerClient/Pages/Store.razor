@@ -10,7 +10,12 @@
 
 @if (books.Count == 0)
 {
-    <p>加载中。。。</p>
+    @if (isLoadding)
+    {
+        <AntDesign.Spin size="large" />
+    } else {
+        <AntDesign.Empty Simple/>
+    } 
 }
 else
 {
@@ -159,7 +164,7 @@ else
     private Book editBook = new Book();
     private bool isAddModalVisible = false;
     private bool isEditModalVisible = false;
-    private bool isLoaddingVisible = false;
+    private bool isLoadding = false;
 
     protected override void OnInitialized()
     {
@@ -167,9 +172,11 @@ else
     }
 
     public async void flushBooks()
-    {
+    {   
+        isLoadding = true;
         books = [];
         books = await bookService.GetAllBooks();
+        isLoadding = false;
         StateHasChanged();
     }
 
