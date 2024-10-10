@@ -1,53 +1,37 @@
 ﻿@page "/"
 @using AntDesign.Charts
+@using AntDesign
 
-<PageTitle>Index</PageTitle>
+<PageTitle>统计数据</PageTitle>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+<Row Gutter="16">
+    <Col Span="12">
+        <Statistic Title="活跃用户" Value=@ActiveUsers />
+    </Col>
+    <Col Span="12">
+        <Statistic Title="收入 (CNY)" Value=@Income Precision="2"/>
+        <Button Style="margin-top: 16px;" Type="primary" OnClick=@flushData>
+            刷新
+        </Button>
+    </Col>
+</Row>
 
-<AntDesign.Charts.Line Data="data1" Config="config1"/>
+@using ManagerClient.Data
+@inject BookService bookService;
 
 @code {
-     object[] data1 = {
-        new {date = "2019-01-01", value = 3},
-        new {date = "2019-02-01", value = 4},
-        new {date = "2019-03-01", value = 3.5},
-        new {date = "2019-04-01", value = 5},
-        new {date = "2019-05-01", value = 4.9, festival = "劳动节"},
-        new {date = "2019-06-01", value = 6},
-        new {date = "2019-07-01", value = 7},
-        new {date = "2019-08-01", value = 9},
-        new {date = "2019-09-01", value = 3},
-        new {date = "2019-10-01", value = 13, festival = "国庆节"},
-        new {date = "2019-11-01", value = 6},
-        new {date = "2019-12-01", value = 23}
-    };
+    public int ActiveUsers = 0;
+    public int Income = 0;
 
-        LineConfig config1 = new LineConfig(){
-            Title = new Title
-            {
-                Visible = true,
-                Text = "带标注点的折线图"
-            },
-            Description = new Description
-            {
-                Visible = true,
-                Text = "在折线图上标注重点的数据，如节假日等"
-            },
-            ForceFit = true,
-            Padding = "auto",
-            XField = "date",
-            YField = "value",
-            YAxis = new ValueAxis
-            {
-                Nice = true
-            },
-            Label = new Label
-            {
-                Visible = false
-            }
-        };
+    protected override void OnInitialized()
+    {
+       flushData();
+    }
 
+    public async void flushData()
+    {
+        Income = bookService.GetIncome();
+        ActiveUsers = bookService.GetUserCount();
+    }
 }

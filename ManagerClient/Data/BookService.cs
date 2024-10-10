@@ -63,6 +63,7 @@ namespace ManagerClient.Data
             //conn.Open();
 		}
 
+		// 统计信息
 		public int GetUserCount()
 		{
             MySqlCommand UserCountCmd = new("select count(*) from Users", GetConn());
@@ -72,6 +73,19 @@ namespace ManagerClient.Data
 			reader.Close();
 			return ret;
 		}
+
+		public int GetIncome()
+		{
+			using var conn = GetConn();
+			using var cmd = new MySqlCommand(@"
+				select sum(price)
+				from Orders
+				join app_database.Books B on B.book_id = Orders.book_id
+			",conn);
+
+			return Convert.ToInt32(cmd.ExecuteScalar());
+		}
+
 		// 仓库书本操作
 		public List<Book> GetAllBooks()
 		{
