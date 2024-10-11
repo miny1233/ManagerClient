@@ -1,13 +1,15 @@
 ﻿@inherits LayoutComponentBase
 @using AntDesign
 
-<PageTitle>ManagerClient</PageTitle>
+
+<PageTitle>图书销售管理系统商家端</PageTitle>
 
 <div class="page">
+
     <div class="sidebar">
         <NavMenu />
     </div>
-
+    
     <main>
         <div class="top-row px-4">
             <a href="https://http3.wcode.net/?q=ncwu.store" target="_blank">
@@ -24,3 +26,28 @@
 
 <script src="https://fastly.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
 <script src="/js/mouse.js"></script>
+
+
+@using ManagerClient.Data
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
+@inject LoginService loginService;
+@inject NavigationManager navigation;
+@inject ProtectedSessionStorage session;
+
+@code {
+    protected override async void OnInitialized()
+    {
+        var path = navigation.Uri.Substring(navigation.BaseUri.Length - 1);
+        var sessionResult = await session.GetAsync<bool>("loginState");      
+        
+        bool loginStatus = sessionResult.Value;
+        
+        Console.WriteLine("Status: " + loginStatus);
+
+        if (!loginStatus && path != "/login")
+        {
+            navigation.NavigateTo("/login");
+        }
+    }
+}

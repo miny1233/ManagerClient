@@ -1,0 +1,42 @@
+@page "/login"
+@layout EmptyLayout;
+
+<PageTitle>登录页面</PageTitle>
+
+<div class="loginBox">
+        <h2>TOTP</h2>
+        <form action="">
+            <div class="item">
+                <input type="text" required>
+                <label for="">Code</label>
+            </div>
+            <button class="btn" @onclick="loginWithTOTP">LOGIN
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </form>
+</div>
+
+@using ManagerClient.Data
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
+@inject LoginService loginService;
+@inject NavigationManager navigation;
+@inject ProtectedSessionStorage session;
+
+@code {
+   
+    public async void loginWithTOTP()
+    {
+        await session.SetAsync("loginState",true);
+
+        var result = await session.GetAsync<bool>("loginState");
+
+        if (result.Value)
+        {
+            navigation.NavigateTo("");
+        }
+    }
+}
