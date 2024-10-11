@@ -1,4 +1,5 @@
 ﻿@page "/counter"
+@using AntDesign
 
 <PageTitle>订单管理</PageTitle>
 
@@ -25,6 +26,7 @@ else
                 <th>状态</th>
                 <th>订单日期</th>
                 <th>地址</th>
+                <th>操作</th>
             </tr>
         </thead>
         <tbody>
@@ -39,6 +41,9 @@ else
                     <td>@order.Status</td>
                     <td>@order.OrderDateTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
                     <td>@order.ShoppingAddress</td>
+                    <td>
+                        <Button Type="@ButtonType.Primary" Size="@ButtonSize.Large" Disabled=@buttonShowable(@order.Status) @onclick="() => Dispatch(order.OrderId)">发货</Button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -50,9 +55,26 @@ else
 
 @code {
     private List<Order> orders;
+    
+    public async Task flushData()
+    {
+        orders = await bookService.GetOrdersAsync();
+        StateHasChanged(); // 异步不做会出现不刷新页面
+    }
+
+    public bool buttonShowable(string Status)
+    {
+        return Status != "待发货";
+    }
+
+    public void Dispatch(int id)
+    {
+        bookService.OrderDispatch(id);
+        flushData();
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        orders = await bookService.GetOrdersAsync();
+        await flushData();
     }
 }

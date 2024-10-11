@@ -166,7 +166,6 @@ namespace ManagerClient.Data
 		}
 
 		// 订单管理
-		
 
 		 public async Task<List<Order>> GetOrdersAsync()
     	{
@@ -207,6 +206,24 @@ namespace ManagerClient.Data
 
         	return orders;
     	}
+
+		public void OrderDispatch(int orderId)
+		{
+			using (var conn = GetConn())
+			{
+				string query = @"
+					update Orders
+					set status = @status
+					where order_id = @orderId
+				";
+				using (var cmd = new MySqlCommand(query,conn))
+				{
+					cmd.Parameters.AddWithValue("@status","待签收");
+					cmd.Parameters.AddWithValue("@orderId",orderId);
+					cmd.ExecuteNonQuery();
+				}
+			}
+		}
 
 	}
 }
