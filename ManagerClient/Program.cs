@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel((context,options) => {
-    options.ListenAnyIP(1233, listenOptions => {
+    options.ListenAnyIP(443, listenOptions => {
         listenOptions.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
-        //listenOptions.UseHttdps();
+        listenOptions.UseHttps("./certificate.pfx","12345678");
     });
+    // options.
 });
 
 // Add services to the container.
@@ -27,6 +28,8 @@ if (!app.Environment.IsDevelopment())
 }
 // Logger
 //app.UseW3CLogging();
+
+app.UseHsts(); // 严格的HTTPS
 
 app.UseStaticFiles();
 
