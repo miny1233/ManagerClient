@@ -21,6 +21,8 @@
         <article class="content px-4">
         @if (loginState) {
             @Body
+        } else {
+            <p>正在鉴权...</p>
         }
         </article>
     </main>
