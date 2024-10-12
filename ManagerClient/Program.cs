@@ -1,4 +1,7 @@
-﻿using ManagerClient.Data;
+﻿using AspNetCore.Totp;
+using AspNetCore.Totp.Interface;
+using Brook.Totp;
+using ManagerClient.Data;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +20,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<BookService>();
 builder.Services.AddSingleton<LoginService>();
+
 builder.Services.AddAntDesign();
 
 var app = builder.Build();

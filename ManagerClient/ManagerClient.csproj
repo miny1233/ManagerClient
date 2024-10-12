@@ -8,7 +8,9 @@
 
   <ItemGroup>
     <PackageReference Include="AntDesign.Charts" Version="0.5.5" />
+    <PackageReference Include="AspNetCore.Totp" Version="2.3.0" />
     <PackageReference Include="BootstrapBlazor" Version="8.10.1" />
+    <PackageReference Include="Brook.Totp" Version="1.0.3" />
     <PackageReference Include="MySql.Data" Version="9.0.0" />
     <PackageReference Include="AntDesign" Version="0.20.4.2" />
   </ItemGroup>

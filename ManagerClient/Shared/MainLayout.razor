@@ -51,10 +51,11 @@
         loginState = sessionTask.Value;
         StateHasChanged();
         
-        // Console.WriteLine("Status: " + loginStatus);
+        Console.WriteLine("Status: " + loginState);
 
-        if (!loginState && path != "/login")
+        if (!loginState)
         {
+            Console.WriteLine("Goto Login");
             navigation.NavigateTo("/login");
         }
     }
