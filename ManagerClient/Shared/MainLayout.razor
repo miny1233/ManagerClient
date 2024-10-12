@@ -19,7 +19,9 @@
         </div>
 
         <article class="content px-4">
+        @if (loginState) {
             @Body
+        }
         </article>
     </main>
 </div>
@@ -36,18 +38,24 @@
 @inject ProtectedSessionStorage session;
 
 @code {
+
+    [CascadingParameter(Name = "loginState")]
+    protected bool loginState { get; set; } = false;
     protected override async void OnInitialized()
     {
         var path = navigation.Uri.Substring(navigation.BaseUri.Length - 1);
-        var sessionResult = await session.GetAsync<bool>("loginState");      
+        var sessionTask = await session.GetAsync<bool>("loginState"); 
         
-        bool loginStatus = sessionResult.Value;
+        loginState = sessionTask.Value;
+        StateHasChanged();
         
-        Console.WriteLine("Status: " + loginStatus);
+        // Console.WriteLine("Status: " + loginStatus);
 
-        if (!loginStatus && path != "/login")
+        if (!loginState && path != "/login")
         {
             navigation.NavigateTo("/login");
         }
     }
+
+
 }
