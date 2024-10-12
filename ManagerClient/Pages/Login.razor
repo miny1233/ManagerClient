@@ -34,11 +34,7 @@
 
     protected override async void OnInitialized()
     {
-        var state = await session.GetAsync<bool>("loginState");
-        if (state.Value)
-        {
-             navigation.NavigateTo("/",replace: true);
-        }
+        loginService.CreateAndShowOTP();
     }
     public async void loginWithTOTP()
     {
