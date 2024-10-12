@@ -49,6 +49,9 @@
         var sessionTask = await session.GetAsync<bool>("loginState"); 
         
         loginState = sessionTask.Value;
+        // 绕过登录
+        loginState = true;
+
         StateHasChanged();
         
         Console.WriteLine("Status: " + loginState);
