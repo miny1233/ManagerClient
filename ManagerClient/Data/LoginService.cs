@@ -59,20 +59,20 @@ namespace ManagerClient.Data {
 
             SmtpClient smtpClient = new();
 
-            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;//指定电子邮件发送方式
-            smtpClient.Host = stmpServer;//指定发送方SMTP服务器
-            smtpClient.EnableSsl = true;//使用安全加密连接
-            smtpClient.UseDefaultCredentials = false;//不和请求一起发送
+            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network; //指定电子邮件发送方式
+            smtpClient.Host = stmpServer; // 指定发送方SMTP服务器
+            smtpClient.EnableSsl = true; // 使用安全加密连接
+            smtpClient.UseDefaultCredentials = false; // 必须为false 否则邮件服务器不转发
             smtpClient.Credentials = new NetworkCredential(mailAccount, pwd);//设置发送账号密码
 
             foreach(var mailTo in AdminEmail) {
                 MailMessage mailMessage = new(mailAccount, mailTo)
                 {
-                    Subject = "图书销售管理认证系统",//设置发送邮件得标题
-                    Body = "Your OTP Code is " + verifyCode,//设置发送邮件内容
-                    BodyEncoding = Encoding.UTF8,//设置发送邮件得编码
-                    IsBodyHtml = false,//设置标题是否为HTML格式
-                    Priority = MailPriority.Normal//设置邮件发送优先级
+                    Subject = "图书销售管理认证系统", // 设置发送邮件得标题
+                    Body = "Your OTP Code is " + verifyCode,// 设置发送邮件内容
+                    BodyEncoding = Encoding.UTF8, // 设置发送邮件得编码
+                    IsBodyHtml = false, // 设置标题是否为HTML格式
+                    Priority = MailPriority.Normal // 设置邮件发送优先级
                 };
 
                 try
