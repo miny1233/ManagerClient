@@ -51,8 +51,6 @@ namespace ManagerClient.Data
 		*/
 		public MySqlConnection GetConn()
 		{
-			GC.Collect(); // 因为每次打开后都不会删，所以干脆每次都主动要求回收一次
-
 			MySqlConnection conn = new(mySqlConnectionStringBuilder.ConnectionString);
 			conn.Open();
 
