@@ -41,8 +41,8 @@
 
 @code {
 
-    [CascadingParameter(Name = "loginState")]
-    protected bool loginState { get; set; } = false;
+    [Parameter]
+    public bool loginState { get; set; } = false;
     protected override async void OnInitialized()
     {
         var path = navigation.Uri.Substring(navigation.BaseUri.Length - 1);
@@ -50,7 +50,7 @@
         
         loginState = sessionTask.Value;
         // 绕过登录
-        loginState = true;
+        //loginState = true;
 
         StateHasChanged();
         
